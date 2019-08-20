@@ -108,7 +108,7 @@ class InputFeatures(object):
         self.is_impossible = is_impossible
 
 
-def read_squad_examples(input_file, is_training, version_2_with_negative):
+def read_squad_examples(input_file, is_training, version_2_with_negative, number_of_examples = None):
     """Read a SQuAD json file into a list of SquadExample."""
     with open(input_file, "r", encoding='utf-8') as reader:
         input_data = json.load(reader)["data"]
@@ -119,7 +119,7 @@ def read_squad_examples(input_file, is_training, version_2_with_negative):
         return False
 
     examples = []
-    for entry in input_data:
+    for n_entry ,entry in enumerate(input_data):
         for paragraph in entry["paragraphs"]:
             paragraph_text = paragraph["context"]
             doc_tokens = []
@@ -182,7 +182,13 @@ def read_squad_examples(input_file, is_training, version_2_with_negative):
                     start_position=start_position,
                     end_position=end_position,
                     is_impossible=is_impossible)
-                examples.append(example)
+                
+                if number_of_examples == None:
+                    examples.append(example)
+                elif n_entry < number_of_examples:
+                    examples.append(example)
+                elif n_entry >= number_of_examples:
+                    return examples
     return examples
 
 

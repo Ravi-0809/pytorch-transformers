@@ -271,7 +271,7 @@ def evaluate(args, model, tokenizer, prefix=""):
     return results
 
 
-def load_and_cache_examples(args, tokenizer, evaluate=False, output_examples=False):
+def load_and_cache_examples(args, tokenizer, evaluate=False, output_examples=False, number_of_examples = None):
     if args.local_rank not in [-1, 0]:
         torch.distributed.barrier()  # Make sure only the first process in distributed training process the dataset, and the others will use the cache
 
@@ -288,7 +288,8 @@ def load_and_cache_examples(args, tokenizer, evaluate=False, output_examples=Fal
         logger.info("Creating features from dataset file at %s", input_file)
         examples = read_squad_examples(input_file=input_file,
                                                 is_training=not evaluate,
-                                                version_2_with_negative=args.version_2_with_negative)
+                                                version_2_with_negative=args.version_2_with_negative,
+                                                number_of_examples=number_of_examples)
         features = convert_examples_to_features(examples=examples,
                                                 tokenizer=tokenizer,
                                                 max_seq_length=args.max_seq_length,

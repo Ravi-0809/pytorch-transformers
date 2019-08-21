@@ -99,6 +99,8 @@ def train_with_rewards(args, model, tokenizer, optimizer, epochs = 2, number_of_
                         args.version_2_with_negative, args.null_score_diff_threshold)
             
             rewards = calc_rewards(all_predictions, used_examples)
+            if args.n_gpu > 1:
+                loss = loss.mean()
             loss = loss + rewards
             if step % 1000 == 0:
                 logger.info('reward = %s', rewards)
@@ -656,6 +658,7 @@ def main():
     # multi-gpu training (should be after apex fp16 initialization)
     if args.n_gpu > 1:
         model = torch.nn.DataParallel(model)
+        logger.info('LOADED DATAPARALLEL MODE')
 
     # Distributed training (should be after apex fp16 initialization)
     if args.local_rank != -1:

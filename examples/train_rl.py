@@ -2,8 +2,8 @@ import torch
 from pytorch_transformers import *
 import numpy as np
 import pandas as pd
-from tqdm import tqdm_notebook as tqdm
-from tqdm import tnrange as trange
+from tqdm import tqdm
+from tqdm import trange
 from torch import nn
 import random
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,

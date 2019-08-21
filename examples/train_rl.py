@@ -65,7 +65,7 @@ def init_model(args, load_fine_tuned = True):
 
     return model, optimizer
 
-def load_dataset(number_of_examples = None, batch_size = 4):
+def load_dataset(args, number_of_examples = None, batch_size = 4):
     ## For Train
     # dataset = rs.load_and_cache_examples(args, tokenizer)
     dataset, examples, features = rs.load_and_cache_examples(args, tokenizer, evaluate=False, output_examples=True, number_of_examples = number_of_examples)
@@ -75,7 +75,7 @@ def load_dataset(number_of_examples = None, batch_size = 4):
 
 def train_with_rewards(args, model, optimizer, epochs = 2, number_of_examples = None, batch_size = 4):
     
-    dataset, examples, features, train_sampler, train_dataloader = load_dataset(number_of_examples=number_of_examples, batch_size=batch_size)
+    dataset, examples, features, train_sampler, train_dataloader = load_dataset(args, number_of_examples=number_of_examples, batch_size=batch_size)
     
     train_iterator = trange(int(epochs), desc="Epoch", disable=-1 not in [-1, 0])
     model.zero_grad()

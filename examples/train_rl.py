@@ -75,6 +75,14 @@ def load_dataset(args, tokenizer, number_of_examples = None, batch_size = 4):
 
 def train_with_rewards(args, model, tokenizer, optimizer, epochs = 2, number_of_examples = None, batch_size = 4):
     
+    prefix = ''
+    output_prediction_file = os.path.join(args.output_dir, "predictions_{}.json".format(prefix))
+    output_nbest_file = os.path.join(args.output_dir, "nbest_predictions_{}.json".format(prefix))
+    if args.version_2_with_negative:
+            output_null_log_odds_file = os.path.join(args.output_dir, "null_odds_{}.json".format(prefix))
+    else:
+            output_null_log_odds_file = None
+
     logger.info('Loading SQuAD dataset ....')
     dataset, examples, features, train_sampler, train_dataloader = load_dataset(args, tokenizer, number_of_examples=number_of_examples, batch_size=batch_size)
     logger.info('Loaded dataset')
@@ -95,7 +103,8 @@ def train_with_rewards(args, model, tokenizer, optimizer, epochs = 2, number_of_
             results, used_features = get_all_results(args, batch, outputs, features)
             used_examples = get_required_examples(used_features, examples)
             all_predictions = write_predictions(used_examples, used_features, results, args.n_best_size,
-                        args.max_answer_length, args.do_lower_case, args.verbose_logging,
+                        args.max_answer_length, args.do_lower_case, output_prediction_file,
+                        output_nbest_file, output_null_log_odds_file, args.verbose_logging,
                         args.version_2_with_negative, args.null_score_diff_threshold)
             
             rewards = calc_rewards(all_predictions, used_examples)
@@ -161,7 +170,8 @@ def get_required_examples(used_features, all_examples):
     return used_examples
 
 def write_predictions(all_examples, all_features, all_results, n_best_size,
-                      max_answer_length, do_lower_case, verbose_logging,
+                      max_answer_length, do_lower_case, output_prediction_file,
+                      output_nbest_file, output_null_log_odds_file, verbose_logging,
                       version_2_with_negative, null_score_diff_threshold):
     """Write final predictions to the json file and log-odds of null if needed."""
     logger.info("Writing predictions to: %s" % (output_prediction_file))
@@ -667,7 +677,7 @@ def main():
                                                           output_device=args.local_rank,
                                                           find_unused_parameters=True)
 
-    train_with_rewards(args, model, tokenizer, optimizer, epochs = args.num_train_epochs, number_of_examples = None, batch_size = args.per_gpu_train_batch_size)
+    train_with_rewards(args, model, tokenizer, optimizer, epochs = args.num_train_epochs, number_of_examples = 20, batch_size = args.per_gpu_train_batch_size)
 
     # ------------ run_squad main: (use if in prod) ----------------
 

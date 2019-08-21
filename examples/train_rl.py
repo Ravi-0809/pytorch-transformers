@@ -621,14 +621,17 @@ def main():
                              "See details at https://nvidia.github.io/apex/amp.html")
     parser.add_argument('--server_ip', type=str, default='', help="Can be used for distant debugging.")
     parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
+    parser.add_argument('--n_gpu', type=int, default=1, help="default num of GPUs")
     args = parser.parse_args()
 
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         args.n_gpu = torch.cuda.device_count()
         torch.distributed.init_process_group(backend='nccl')
+        args.n_gpu = 2
+        logger.info('number of GPUs is %s', args.n_gpus)
     else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
-        logger.info('------------------------------------NOT SUPPOSED TO BE HERE------------------------------------')
+        # logger.info('------------------------------------NOT SUPPOSED TO BE HERE------------------------------------')
         torch.cuda.set_device(args.local_rank)
         device = torch.device("cuda", args.local_rank)
         torch.distributed.init_process_group(backend='nccl')

@@ -1,4 +1,4 @@
-python torch.distributed.launch --nproc_per_node=2 train_rl.py \
+python -m torch.distributed.launch --nproc_per_node=2 train_rl.py \
     --do_train \
     --do_lower_case \
     --train_file /home/ubuntu/question_generation/data/train-v2.0.json \

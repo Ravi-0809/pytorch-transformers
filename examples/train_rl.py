@@ -30,7 +30,7 @@ from utils_squad_evaluate import find_all_best_thresh_v2, make_qid_to_has_ans, g
 
 logger = logging.getLogger(__name__)
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '01'
 
 def init_model(args, load_fine_tuned = True):
 
@@ -627,7 +627,6 @@ def main():
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         args.n_gpu = torch.cuda.device_count()
-        # torch.distributed.init_process_group(backend='nccl')
         args.n_gpu = 2
         logger.info('number of GPUs is %s', args.n_gpu)
     else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs

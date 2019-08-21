@@ -30,7 +30,7 @@ from utils_squad_evaluate import find_all_best_thresh_v2, make_qid_to_has_ans, g
 
 logger = logging.getLogger(__name__)
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '01'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
 
 def init_model(args, load_fine_tuned = True):
 
@@ -634,6 +634,7 @@ def main():
     parser.add_argument('--server_ip', type=str, default='', help="Can be used for distant debugging.")
     parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
     parser.add_argument('--n_gpu', type=int, default=1, help="default num of GPUs")
+    parser.add_argument('--num_of_examples', type=str, default='None', help="number of examples to load")
     args = parser.parse_args()
 
     logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -677,7 +678,8 @@ def main():
                                                           output_device=args.local_rank,
                                                           find_unused_parameters=True)
 
-    train_with_rewards(args, model, tokenizer, optimizer, epochs = args.num_train_epochs, number_of_examples = 20, batch_size = args.per_gpu_train_batch_size)
+    num_examples = int(args.num_of_examples) if args.num_of_examples != 'None' else None
+    train_with_rewards(args, model, tokenizer, optimizer, epochs = args.num_train_epochs, number_of_examples = num_examples, batch_size = args.per_gpu_train_batch_size)
 
     # ------------ run_squad main: (use if in prod) ----------------
 

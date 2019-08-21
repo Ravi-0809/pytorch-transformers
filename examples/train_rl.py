@@ -626,23 +626,24 @@ def main():
     parser.add_argument('--n_gpu', type=int, default=1, help="default num of GPUs")
     args = parser.parse_args()
 
-    if args.local_rank == -1 or args.no_cuda:
+    logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                        datefmt = '%m/%d/%Y %H:%M:%S',
+                        level = logging.INFO if args.local_rank in [-1, 0] else logging.WARN)
+
+    if int(args.local_rank) == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         args.n_gpu = torch.cuda.device_count()
         args.n_gpu = 2
         logger.info('number of GPUs is %s', args.n_gpu)
     else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
-        # logger.info('------------------------------------NOT SUPPOSED TO BE HERE------------------------------------')
+        logger.info('------------------------------------NOT SUPPOSED TO BE HERE------------------------------------')
         torch.cuda.set_device(args.local_rank)
         device = torch.device("cuda", args.local_rank)
         torch.distributed.init_process_group(backend='nccl')
-        args.n_gpu = 2
+        args.n_gpu = 1
     args.device = device
 
     # Setup logging
-    logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                        datefmt = '%m/%d/%Y %H:%M:%S',
-                        level = logging.INFO if args.local_rank in [-1, 0] else logging.WARN)
     logger.warning("Process rank: %s, device: %s, n_gpu: %s, distributed training: %s, 16-bits training: %s",
                     args.local_rank, device, args.n_gpu, bool(args.local_rank != -1), args.fp16)
     

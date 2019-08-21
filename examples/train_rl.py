@@ -629,7 +629,7 @@ def main():
         args.n_gpu = torch.cuda.device_count()
         torch.distributed.init_process_group(backend='nccl')
         args.n_gpu = 2
-        logger.info('number of GPUs is %s', args.n_gpus)
+        logger.info('number of GPUs is %s', args.n_gpu)
     else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
         # logger.info('------------------------------------NOT SUPPOSED TO BE HERE------------------------------------')
         torch.cuda.set_device(args.local_rank)

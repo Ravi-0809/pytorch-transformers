@@ -657,7 +657,7 @@ def main():
                                                           output_device=args.local_rank,
                                                           find_unused_parameters=True)
 
-    train_with_rewards(args, model, optimizer, epochs = args.num_train_epochs, number_of_examples = None, batch_size = arg.per_gpu_train_batch_size)
+    train_with_rewards(args, model, optimizer, epochs = args.num_train_epochs, number_of_examples = None, batch_size = args.per_gpu_train_batch_size)
 
     # ------------ run_squad main: (use if in prod) ----------------
 

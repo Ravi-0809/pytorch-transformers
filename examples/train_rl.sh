@@ -12,3 +12,5 @@ python -m torch.distributed.launch --nproc_per_node=2 train_rl.py \
     --overwrite_output_dir  \
     --local_rank=-1 \
     --fp16  \
+    --model_type bert   \
+    --model_name_or_path bert-large-uncased \

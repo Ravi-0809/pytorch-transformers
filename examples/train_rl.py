@@ -55,13 +55,13 @@ def init_model(args, load_fine_tuned = True):
     torch.backends.cudnn.benchmark = True
     torch.backends.cudnn.enabled = True
 
-    prefix = ''
-    output_prediction_file = os.path.join(args.output_dir, "predictions_{}.json".format(prefix))
-    output_nbest_file = os.path.join(args.output_dir, "nbest_predictions_{}.json".format(prefix))
-    if args.version_2_with_negative:
-            output_null_log_odds_file = os.path.join(args.output_dir, "null_odds_{}.json".format(prefix))
-    else:
-            output_null_log_odds_file = None
+    # prefix = ''
+    # output_prediction_file = os.path.join(args.output_dir, "predictions_{}.json".format(prefix))
+    # output_nbest_file = os.path.join(args.output_dir, "nbest_predictions_{}.json".format(prefix))
+    # if args.version_2_with_negative:
+    #         output_null_log_odds_file = os.path.join(args.output_dir, "null_odds_{}.json".format(prefix))
+    # else:
+    #         output_null_log_odds_file = None
 
     return model, optimizer, tokenizer
 
@@ -75,11 +75,13 @@ def load_dataset(args, tokenizer, number_of_examples = None, batch_size = 4):
 
 def train_with_rewards(args, model, tokenizer, optimizer, epochs = 2, number_of_examples = None, batch_size = 4):
     
+    logger.info('Loading SQuAD dataset ....')
     dataset, examples, features, train_sampler, train_dataloader = load_dataset(args, tokenizer, number_of_examples=number_of_examples, batch_size=batch_size)
-    
+    logger.info('Loaded dataset')
+
     train_iterator = trange(int(epochs), desc="Epoch", disable=-1 not in [-1, 0])
     model.zero_grad()
-    
+    logger.info('Starting Training ....')
     for tr_iter in train_iterator:
         epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=-1 not in [-1, 0])
         for step, batch in enumerate(epoch_iterator):
@@ -99,7 +101,7 @@ def train_with_rewards(args, model, tokenizer, optimizer, epochs = 2, number_of_
             rewards = calc_rewards(all_predictions, used_examples)
             loss = loss + rewards
             if step % 1000 == 0:
-                logger.info('reward = ', rewards)
+                logger.info('reward = %s', rewards)
             loss.backward()
             optimizer.step()
             model.zero_grad()
@@ -113,7 +115,8 @@ def train_with_rewards(args, model, tokenizer, optimizer, epochs = 2, number_of_
                     model_to_save.save_pretrained(output_dir)
                     torch.save(args, os.path.join(output_dir, 'training_args.bin'))
                     logger.info("Saving model checkpoint to %s", output_dir)
-        logger.info(f'The loss in step ', tr_iter, ' is ', loss)
+        logger.info('The loss in step %s is %s',tr_iter, loss)
+    logger.info('Training complete ...')
 
 def form_inputs(args, batch):
     inputs = {}
@@ -528,10 +531,10 @@ def main():
                         help="SQuAD json for training. E.g., train-v1.1.json")
     # parser.add_argument("--predict_file", default=None, type=str, required=True,
     #                     help="SQuAD json for predictions. E.g., dev-v1.1.json or test-v1.1.json")
-    # parser.add_argument("--model_type", default=None, type=str, required=True,
-    #                     help="Model type selected in the list: " + ", ".join(MODEL_CLASSES.keys()))
-    # parser.add_argument("--model_name_or_path", default=None, type=str, required=True,
-    #                     help="Path to pre-trained model or shortcut name selected in the list: " + ", ".join(ALL_MODELS))
+    parser.add_argument("--model_type", default=None, type=str, required=True,
+                        help="Model type selected in the list: ")
+    parser.add_argument("--model_name_or_path", default=None, type=str, required=True,
+                        help="Path to pre-trained model or shortcut name selected in the list: ")
     parser.add_argument("--output_dir", default=None, type=str, required=True,
                         help="The output directory where the model checkpoints and predictions will be written.")
 

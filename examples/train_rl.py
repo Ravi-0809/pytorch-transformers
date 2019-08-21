@@ -63,9 +63,9 @@ def init_model(args, load_fine_tuned = True):
     else:
             output_null_log_odds_file = None
 
-    return model, optimizer
+    return model, optimizer, tokenizer
 
-def load_dataset(args, number_of_examples = None, batch_size = 4):
+def load_dataset(args, tokenizer, number_of_examples = None, batch_size = 4):
     ## For Train
     # dataset = rs.load_and_cache_examples(args, tokenizer)
     dataset, examples, features = rs.load_and_cache_examples(args, tokenizer, evaluate=False, output_examples=True, number_of_examples = number_of_examples)
@@ -73,9 +73,9 @@ def load_dataset(args, number_of_examples = None, batch_size = 4):
     train_dataloader = DataLoader(dataset, sampler=train_sampler, batch_size=batch_size)
     return dataset, examples, features, train_sampler, train_dataloader
 
-def train_with_rewards(args, model, optimizer, epochs = 2, number_of_examples = None, batch_size = 4):
+def train_with_rewards(args, model, tokenizer, optimizer, epochs = 2, number_of_examples = None, batch_size = 4):
     
-    dataset, examples, features, train_sampler, train_dataloader = load_dataset(args, number_of_examples=number_of_examples, batch_size=batch_size)
+    dataset, examples, features, train_sampler, train_dataloader = load_dataset(args, tokenizer, number_of_examples=number_of_examples, batch_size=batch_size)
     
     train_iterator = trange(int(epochs), desc="Epoch", disable=-1 not in [-1, 0])
     model.zero_grad()
@@ -638,7 +638,7 @@ def main():
     logger.warning("Process rank: %s, device: %s, n_gpu: %s, distributed training: %s, 16-bits training: %s",
                     args.local_rank, device, args.n_gpu, bool(args.local_rank != -1), args.fp16)
     
-    model, optimizer = init_model(args, load_fine_tuned = True)
+    model, optimizer, tokenizer = init_model(args, load_fine_tuned = True)
 
     if args.fp16:
         try:
@@ -657,7 +657,7 @@ def main():
                                                           output_device=args.local_rank,
                                                           find_unused_parameters=True)
 
-    train_with_rewards(args, model, optimizer, epochs = args.num_train_epochs, number_of_examples = None, batch_size = args.per_gpu_train_batch_size)
+    train_with_rewards(args, model, tokenizer, optimizer, epochs = args.num_train_epochs, number_of_examples = None, batch_size = args.per_gpu_train_batch_size)
 
     # ------------ run_squad main: (use if in prod) ----------------
 

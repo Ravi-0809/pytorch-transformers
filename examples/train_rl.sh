@@ -15,3 +15,4 @@ python -m torch.distributed.launch --nproc_per_node=2 train_rl.py \
     --model_type bert   \
     --model_name_or_path bert-large-uncased \
     --version_2_with_negative   \
+    --num_of_examples=10    \

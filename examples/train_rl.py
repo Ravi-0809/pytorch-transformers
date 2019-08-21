@@ -644,7 +644,7 @@ def main():
     if int(args.local_rank) == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         args.n_gpu = torch.cuda.device_count()
-        args.n_gpu = 2
+        # args.n_gpu = 2
         logger.info('number of GPUs is %s', args.n_gpu)
     else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
         logger.info('------------------------------------NOT SUPPOSED TO BE HERE------------------------------------')

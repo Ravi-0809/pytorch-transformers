@@ -174,8 +174,8 @@ def write_predictions(all_examples, all_features, all_results, n_best_size,
                       output_nbest_file, output_null_log_odds_file, verbose_logging,
                       version_2_with_negative, null_score_diff_threshold):
     """Write final predictions to the json file and log-odds of null if needed."""
-    logger.info("Writing predictions to: %s" % (output_prediction_file))
-    logger.info("Writing nbest to: %s" % (output_nbest_file))
+    # logger.info("Writing predictions to: %s" % (output_prediction_file))
+    # logger.info("Writing nbest to: %s" % (output_nbest_file))
 
     example_index_to_features = collections.defaultdict(list)
     count_f = 0

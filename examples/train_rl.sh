@@ -10,5 +10,5 @@ python -m torch.distributed.launch --nproc_per_node=2 train_rl.py \
     --per_gpu_train_batch_size=2   \
     --save_steps 10000  \
     --overwrite_output_dir  \
-    --local_rank -1 \
+    --local_rank=-1 \
     --fp16  \
